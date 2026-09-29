@@ -1,0 +1,3932 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>SkyAgentic — COBOL Modernization TDD & Evaluation Framework</title>
+
+    <style>
+        :root {
+            --bg: #f5f7fa;
+            --card: #ffffff;
+            --text: #172033;
+            --muted: #64748b;
+            --border: #dbe2ea;
+            --primary: #334155;
+            --primary-light: #eef2f7;
+            --success: #166534;
+            --success-bg: #dcfce7;
+            --warning: #92400e;
+            --warning-bg: #fef3c7;
+            --danger: #991b1b;
+            --danger-bg: #fee2e2;
+            --purple: #5b21b6;
+            --purple-bg: #ede9fe;
+            --blue: #1d4ed8;
+            --blue-bg: #dbeafe;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: min(1400px, 94%);
+            margin: auto;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 48px 0;
+            border-bottom: 4px solid #475569;
+        }
+
+        header .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(30px, 5vw, 52px);
+            line-height: 1.1;
+        }
+
+        header p {
+            max-width: 950px;
+            color: #cbd5e1;
+            font-size: 17px;
+            margin: 18px 0 0;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .meta span {
+            border: 1px solid #475569;
+            background: #1e293b;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        nav .nav-inner {
+            display: flex;
+            overflow-x: auto;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        nav a {
+            white-space: nowrap;
+            text-decoration: none;
+            color: var(--muted);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        nav a:hover {
+            background: var(--primary-light);
+            color: var(--text);
+        }
+
+        main {
+            padding: 34px 0 80px;
+        }
+
+        section {
+            margin-bottom: 42px;
+            scroll-margin-top: 75px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin: 0 0 18px;
+            color: #111827;
+        }
+
+        h3 {
+            font-size: 19px;
+            margin: 24px 0 10px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-top: -10px;
+            margin-bottom: 22px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 900px) {
+
+            .grid,
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .metric {
+            padding: 20px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .metric .value {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+
+        .metric .label {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .principle {
+            border-left: 4px solid #475569;
+            background: #f8fafc;
+            padding: 18px 20px;
+            margin: 18px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .principle strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .success {
+            border-left-color: var(--success);
+            background: var(--success-bg);
+        }
+
+        .warning {
+            border-left-color: var(--warning);
+            background: var(--warning-bg);
+        }
+
+        .danger {
+            border-left-color: var(--danger);
+            background: var(--danger-bg);
+        }
+
+        .purple {
+            border-left-color: var(--purple);
+            background: var(--purple-bg);
+        }
+
+        .flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .flow-node {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .arrow {
+            color: #64748b;
+            font-weight: 900;
+        }
+
+        .layer {
+            margin: 18px 0;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .layer-title {
+            padding: 13px 16px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            font-weight: 800;
+        }
+
+        .layer-body {
+            padding: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid var(--border);
+            padding: 11px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 800;
+            color: #334155;
+            position: sticky;
+            top: 47px;
+            z-index: 5;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        code,
+        pre {
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.92em;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .badge-pass {
+            color: var(--success);
+            background: var(--success-bg);
+        }
+
+        .badge-fail {
+            color: var(--danger);
+            background: var(--danger-bg);
+        }
+
+        .badge-info {
+            color: var(--blue);
+            background: var(--blue-bg);
+        }
+
+        .badge-warn {
+            color: var(--warning);
+            background: var(--warning-bg);
+        }
+
+        .badge-ai {
+            color: var(--purple);
+            background: var(--purple-bg);
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .checklist li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checklist li:last-child {
+            border-bottom: 0;
+        }
+
+        .checklist li::before {
+            content: "✓";
+            display: inline-block;
+            margin-right: 9px;
+            font-weight: 900;
+            color: var(--success);
+        }
+
+        .gate {
+            border: 2px solid #334155;
+            border-radius: 12px;
+            background: white;
+            padding: 22px;
+            margin-top: 20px;
+        }
+
+        .gate h3 {
+            margin-top: 0;
+        }
+
+        .gate-rule {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .gate-rule:last-child {
+            border-bottom: 0;
+        }
+
+        .gate-number {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #e2e8f0;
+            font-weight: 800;
+            flex: 0 0 auto;
+        }
+
+        .example {
+            background: #f8fafc;
+            border: 1px dashed #94a3b8;
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .example .step {
+            display: grid;
+            grid-template-columns: 38px 1fr;
+            gap: 12px;
+            margin: 10px 0;
+        }
+
+        .step-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #334155;
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 10px 12px;
+            border-radius: 7px;
+            font-size: 13px;
+        }
+
+        .filter-bar input {
+            min-width: 260px;
+            flex: 1;
+        }
+
+        .btn {
+            border: 0;
+            background: #334155;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .btn:hover {
+            background: #1e293b;
+        }
+
+        .small {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            background: white;
+            padding: 30px 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .status-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .status {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .status strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        @media print {
+            nav {
+                display: none;
+            }
+
+            header {
+                color: black;
+                background: white;
+                border-bottom: 1px solid #000;
+            }
+
+            header p,
+            header .meta span {
+                color: black;
+            }
+
+            .card,
+            .table-wrap,
+            .layer,
+            .metric {
+                box-shadow: none;
+                break-inside: avoid;
+            }
+
+            section {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <div class="eyebrow">SkyAgentic Modernization Program</div>
+
+            <h1>COBOL Modernization<br>TDD & Evaluation Framework</h1>
+
+            <p>
+                Business Logic Evaluation Layer, Test-Driven Development Catalogue,
+                Legacy-vs-New Behavioral Validation, Coverage and Independent
+                Evaluation Gates.
+            </p>
+
+            <div class="meta">
+                <span>Evaluation Framework</span>
+                <span>Business Rule Extraction</span>
+                <span>LHS vs RHS Validation</span>
+                <span>COBOL → Java Modernization</span>
+                <span>Traceability</span>
+                <span>Human Review</span>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container nav-inner">
+            <a href="#purpose">Purpose</a>
+            <a href="#principles">Principles</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#business-rules">Business Rules</a>
+            <a href="#data-flow">Data Flow</a>
+            <a href="#tdd">TDD Catalogue</a>
+            <a href="#comparison">LHS vs RHS</a>
+            <a href="#coverage">Coverage</a>
+            <a href="#gates">Evaluation Gates</a>
+            <a href="#security">Security</a>
+            <a href="#performance">Performance</a>
+            <a href="#traceability">Traceability</a>
+            <a href="#human">Human Review</a>
+            <a href="#limitations">Limitations</a>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <!-- ========================================================= -->
+        <!-- PURPOSE -->
+        <!-- ========================================================= -->
+
+        <section id="purpose">
+
+            <h2>1. Purpose</h2>
+
+            <p class="subtitle">
+                Define what the evaluation system must prove before a COBOL modernization
+                workflow can be considered complete.
+            </p>
+
+            <div class="principle success">
+                <strong>Core completion principle</strong>
+                Project completion is not established by an LLM stating that the
+                translation is correct. Completion is established by independently
+                executable scenarios, coverage evidence, legacy-system outputs,
+                converted-system outputs, and explicit validation results.
+            </div>
+
+            <div class="grid">
+
+                <div class="metric">
+                    <div class="value">01</div>
+                    <div class="label">
+                        Discover business decisions and rules from the legacy system
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="value">02</div>
+                    <div class="label">
+                        Convert discovered rules into executable test scenarios
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="value">03</div>
+                    <div class="label">
+                        Compare legacy and converted behavior independently
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="value">04</div>
+                    <div class="label">
+                        Detect uncovered decision points and incomplete scenarios
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="value">05</div>
+                    <div class="label">
+                        Record complete traceability from source to test result
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="value">06</div>
+                    <div class="label">
+                        Produce evidence for customer/human validation
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- PRINCIPLES -->
+        <!-- ========================================================= -->
+
+        <section id="principles">
+
+            <h2>2. Evaluation Principles</h2>
+
+            <div class="grid-2">
+
+                <div class="card">
+                    <h3>Independent Evaluation</h3>
+
+                    <p>
+                        The system being evaluated must not be the sole authority
+                        responsible for grading itself.
+                    </p>
+
+                    <pre>
+LLM:
+"Translation is correct."
+
+        ≠
+
+Independent Harness:
+"All executable scenarios passed,
+coverage gaps are accounted for,
+and legacy/new outputs satisfy
+the configured equivalence rules."
+            </pre>
+                </div>
+
+                <div class="card">
+                    <h3>LHS = RHS Model</h3>
+
+                    <p>
+                        The converted system is validated against expected behavior
+                        derived from the legacy system.
+                    </p>
+
+                    <pre>
+Naming: RHS = legacy oracle (expected)
+        LHS = converted system (observed)
+
+Test scenario (same input)
+     │                  │
+     ▼                  ▼
+Legacy COBOL      Converted Java
+     │                  │
+     ▼                  ▼
+RHS output        LHS output
+     └────────┬─────────┘
+              ▼
+     Compare (after configured normalization)
+
+PASS only when:
+Observed behavior satisfies
+the defined equivalence criteria.
+            </pre>
+                </div>
+
+            </div>
+
+            <div class="principle warning">
+                <strong>Important distinction</strong>
+                Behavioral equivalence does not prove that the original business rule
+                was correct according to business intent. It proves that the new system
+                reproduces the behavior that was observed from the legacy system.
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ARCHITECTURE -->
+        <!-- ========================================================= -->
+
+        <section id="architecture">
+
+            <h2>3. Evaluation Architecture</h2>
+
+            <p class="subtitle">
+                The evaluation layer sits independently from the translation agent.
+            </p>
+
+            <div class="flow">
+
+                <div class="flow-node">COBOL Repository</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Parser</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Decision Points</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Business Rules</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Test Scenarios</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Legacy Oracle</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Converted System</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Comparison Engine</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Evaluation Gate</div>
+
+            </div>
+
+            <div class="layer">
+
+                <div class="layer-title">
+                    Layer A — Source Understanding
+                </div>
+
+                <div class="layer-body">
+
+                    <ul class="checklist">
+                        <li>COBOL source ingestion</li>
+                        <li>Copybook dependency validation</li>
+                        <li>Structural parsing</li>
+                        <li>Decision-point discovery</li>
+                        <li>Data-flow discovery</li>
+                        <li>Source-line traceability</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="layer">
+
+                <div class="layer-title">
+                    Layer B — Business Logic Evaluation
+                </div>
+
+                <div class="layer-body">
+
+                    <ul class="checklist">
+                        <li>AI-assisted rule drafting</li>
+                        <li>Source citation for every proposed rule</li>
+                        <li>Independent citation verification</li>
+                        <li>Decision-point coverage mapping</li>
+                        <li>Gap detection</li>
+                        <li>Human review of exceptions</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="layer">
+
+                <div class="layer-title">
+                    Layer C — TDD / Behavioral Evaluation
+                </div>
+
+                <div class="layer-body">
+
+                    <ul class="checklist">
+                        <li>Scenario generation</li>
+                        <li>Legacy execution</li>
+                        <li>Converted-system execution</li>
+                        <li>Output capture</li>
+                        <li>Output normalization</li>
+                        <li>Deterministic comparison</li>
+                        <li>Failure classification</li>
+                        <li>Trace generation</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- BUSINESS RULES -->
+        <!-- ========================================================= -->
+
+        <section id="business-rules">
+
+            <h2>4. Business Logic Evaluation Layer</h2>
+
+            <p class="subtitle">
+                The primary objective is to prevent silently missing business rules.
+            </p>
+
+            <div class="principle danger">
+                <strong>Primary risk identified in the team experiment</strong>
+                An AI-generated rule that is wrong can usually be detected by review or testing.
+                A rule silently omitted by the AI is harder to detect because the
+                output can still appear complete.
+            </div>
+
+            <h3>4.1 Rule Discovery Pipeline</h3>
+
+            <div class="flow">
+
+                <div class="flow-node">COBOL + Copybooks</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Structural Parser</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Decision Points</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">AI Rule Draft</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Citation Verification</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Coverage Mapping</div>
+                <div class="arrow">→</div>
+
+                <div class="flow-node">Executable Scenarios</div>
+
+            </div>
+
+            <h3>4.2 Rule Record</h3>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Rule ID</td>
+                            <td>Stable identifier for the business rule.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Source Program</td>
+                            <td>COBOL program containing the rule.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Source Location</td>
+                            <td>Exact source location used as evidence.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Decision Point</td>
+                            <td>Structural decision identified by the parser.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Rule Description</td>
+                            <td>Human-readable representation of the observed logic.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Inputs</td>
+                            <td>Data required to evaluate the rule.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Conditions</td>
+                            <td>Observed conditions or predicates.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Expected Behavior</td>
+                            <td>Expected result derived from the legacy system.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Scenario IDs</td>
+                            <td>Tests covering the rule.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Coverage Status</td>
+                            <td>Covered, partially covered, or uncovered.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Verification Status</td>
+                            <td>Whether the source citation was independently verified.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Classification</td>
+                            <td>Business rule, technical/control decision, or unclassified, with a recorded rationale.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Source Version</td>
+                            <td>Source file hash / commit and copybook-expansion mapping used when the rule was cited.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Confidence</td>
+                            <td>Drafting and verification confidence, used to prioritize human review.</td>
+                        </tr>
+
+                        <tr>
+                            <td>Business Approval</td>
+                            <td>Business-owner disposition: approved, disputed, or not yet reviewed.</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <h3>4.3 Independent Citation Verification</h3>
+
+            <div class="grid-2">
+
+                <div class="card">
+
+                    <h3>Pass</h3>
+
+                    <p>
+                        The cited COBOL lines independently support the rule
+                        description.
+                    </p>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>Fail</h3>
+
+                    <p>
+                        The cited source does not support the generated rule,
+                        the citation is invalid, or the relevant source cannot
+                        be verified.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="principle warning">
+                <strong>Verifier independence requirement</strong>
+                The citation verifier must not be the same model run, prompt, or
+                context that drafted the rule. Acceptable configurations: a different
+                model with no access to the draft's reasoning, deterministic checks
+                (line existence, identifier/literal match), or human review. Where an
+                LLM verifier is used, a defined sample of Pass and Fail decisions is
+                spot-checked by a human, and the sampling rate and results are
+                recorded (TDD-BIZ-007).
+            </div>
+
+            <h3>4.4 Coverage Principle</h3>
+
+            <div class="principle success">
+                <strong>Coverage must be measured against discovered decision points.</strong>
+
+                A successful test suite is not sufficient if the scenario generator
+                silently omitted a business branch. The evaluation layer therefore
+                compares the generated scenario set against the parser's structural
+                decision-point inventory.
+            </div>
+
+        
+            <h3>4.5 Decision Classification &amp; Recall</h3>
+
+            <div class="principle danger">
+                <strong>Misclassification is a silent-omission path.</strong>
+                Every parser-discovered decision point is classified as a business
+                rule or a technical/control decision. A real business rule classified
+                as technical disappears from the scenario set without any test able to
+                fail. Classification is therefore evaluated for recall, not only for
+                the precision of the rules that were kept.
+            </div>
+
+            <ul class="checklist">
+                <li>Every decision point carries a classification and a written rationale; "unclassified" blocks Gate 2.</li>
+                <li>Every technical/control classification is listed in the review package, grouped by reason (file status, EIB/response check, loop control, etc.).</li>
+                <li>Seeded fixtures containing known business rules are classified during each release; any miss fails TDD-BIZ-006.</li>
+                <li>A human samples technical/control classifications, with a higher sampling rate for those touching amounts, limits, eligibility, status, or dates.</li>
+                <li>Parser completeness is reconciled against a raw construct count (IF, EVALUATE, PERFORM UNTIL, GO TO DEPENDING, etc.) so skipped constructs are visible (TDD-SRC-005).</li>
+            </ul>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- DATA FLOW -->
+        <!-- ========================================================= -->
+
+        <section id="data-flow">
+
+            <h2>5. Business Data Flow Evaluation</h2>
+
+            <p class="subtitle">
+                The evaluation must understand not only decisions but also where
+                information enters, changes, and exits the legacy system.
+            </p>
+
+            <div class="example">
+
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div>
+                        <strong>Input</strong><br>
+                        Transaction / API / batch input enters the legacy system.
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div>
+                        <strong>Validation</strong><br>
+                        Existing input validations are identified.
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div>
+                        <strong>Business Decision</strong><br>
+                        Business rules determine the processing path.
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div>
+                        <strong>Transformation</strong><br>
+                        Data is calculated, transformed, or routed.
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">5</div>
+                    <div>
+                        <strong>Persistence / Output</strong><br>
+                        Data reaches the database, output file, response, or
+                        downstream operation.
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-num">6</div>
+                    <div>
+                        <strong>Scenario</strong><br>
+                        The complete path becomes part of the TDD catalogue.
+                    </div>
+                </div>
+
+            </div>
+
+            <h3>Example Data Flow</h3>
+
+            <pre>
+Input
+  │
+  ▼
+Input Validation
+  │
+  ├── Invalid ──────► Error Response
+  │
+  ▼
+Business Rule A
+  │
+  ├── Branch A ─────► Transformation A
+  │
+  └── Branch B ─────► Transformation B
+                           │
+                           ▼
+                    Database / Output
+                           │
+                           ▼
+                     Expected Result
+    </pre>
+
+            <div class="principle warning">
+                <strong>Important</strong>
+                The example above describes the evaluation structure. Actual business
+                rules, conditions, field names, thresholds, and outputs must come from
+                the target COBOL codebase and customer-approved expectations.
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TDD -->
+        <!-- ========================================================= -->
+
+        <section id="tdd">
+
+            <h2>6. TDD / Test-Case Catalogue</h2>
+
+            <p class="subtitle">
+                The catalogue defines what must be tested and what evidence must be
+                produced.
+            </p>
+
+            <div class="filter-bar">
+
+                <input type="text" id="searchInput" placeholder="Search test cases..." />
+
+                <select id="categoryFilter">
+                    <option value="all">All categories</option>
+                    <option value="source">Source / Parsing</option>
+                    <option value="business">Business Logic</option>
+                    <option value="coverage">Coverage</option>
+                    <option value="functional">Functional Equivalence</option>
+                    <option value="determinism">Determinism</option>
+                    <option value="security">Security</option>
+                    <option value="performance">Performance</option>
+                    <option value="traceability">Traceability</option>
+                    <option value="approval">Approval</option>
+                </select>
+
+                <button class="btn" onclick="resetFilters()">
+                    Reset
+                </button>
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table id="testTable">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Category</th>
+                            <th>Test</th>
+                            <th>Input / Condition</th>
+                            <th>Expected Result</th>
+                            <th>Pass Criteria</th>
+                            <th>Evidence</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <!-- SOURCE -->
+
+                        <tr data-category="source">
+
+                            <td>TDD-SRC-001</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Source
+                                </span>
+                            </td>
+
+                            <td>COBOL ingestion</td>
+
+                            <td>Valid COBOL repository</td>
+
+                            <td>
+                                Source repository is registered and accessible.
+                            </td>
+
+                            <td>
+                                All configured source files are discovered.
+                            </td>
+
+                            <td>
+                                Repository manifest.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="source">
+
+                            <td>TDD-SRC-002</td>
+
+                            <td>Source</td>
+
+                            <td>Copybook dependency validation</td>
+
+                            <td>COBOL program requiring copybooks</td>
+
+                            <td>
+                                Required copybooks are available before parsing.
+                            </td>
+
+                            <td>
+                                Missing dependencies cause the source stage to fail
+                                rather than silently continuing.
+                            </td>
+
+                            <td>
+                                Dependency report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="source">
+
+                            <td>TDD-SRC-003</td>
+
+                            <td>Source</td>
+
+                            <td>Structural parsing</td>
+
+                            <td>Valid COBOL + dependencies</td>
+
+                            <td>
+                                AST / structural representation is generated.
+                            </td>
+
+                            <td>
+                                Parser completes without structural errors.
+                            </td>
+
+                            <td>
+                                Parser report and source mapping.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="source">
+
+                            <td>TDD-SRC-004</td>
+
+                            <td>Source</td>
+
+                            <td>Unparseable source handling</td>
+
+                            <td>Unsupported or malformed COBOL</td>
+
+                            <td>
+                                Source is explicitly marked as unresolved.
+                            </td>
+
+                            <td>
+                                System does not interpret unavailable code as empty
+                                or successfully parsed.
+                            </td>
+
+                            <td>
+                                Parse failure report.
+                            </td>
+
+                        </tr>
+                        <tr data-category="source">
+
+                            <td>TDD-SRC-005</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Source
+                                </span>
+                            </td>
+
+                            <td>Parser completeness reconciliation</td>
+
+                            <td>Parsed program + independent raw construct count</td>
+
+                            <td>
+                                Parser inventory reconciles with a separate token-level count of decision constructs.
+                            </td>
+
+                            <td>
+                                Every difference is explained or marked unresolved; none is treated as empty or parsed.
+                            </td>
+
+                            <td>
+                                Reconciliation report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="source">
+
+                            <td>TDD-SRC-006</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Source
+                                </span>
+                            </td>
+
+                            <td>Source version and line mapping</td>
+
+                            <td>Program with copybooks expanded</td>
+
+                            <td>
+                                Citations map back to original source lines using the recorded source hash / commit.
+                            </td>
+
+                            <td>
+                                Citation line numbers remain correct after copybook expansion; a changed hash invalidates cached citations.
+                            </td>
+
+                            <td>
+                                Line-mapping report.
+                            </td>
+
+                        </tr>
+
+
+                        <!-- BUSINESS -->
+
+                        <tr data-category="business">
+
+                            <td>TDD-BIZ-001</td>
+
+                            <td>Business Logic</td>
+
+                            <td>Decision-point discovery</td>
+
+                            <td>Parsed COBOL program</td>
+
+                            <td>
+                                Structural decision points are inventoried.
+                            </td>
+
+                            <td>
+                                Decision-point inventory is generated and persisted.
+                            </td>
+
+                            <td>
+                                Decision-point catalogue.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="business">
+
+                            <td>TDD-BIZ-002</td>
+
+                            <td>Business Logic</td>
+
+                            <td>Rule extraction</td>
+
+                            <td>Identified decision point</td>
+
+                            <td>
+                                A rule representation is produced with source evidence.
+                            </td>
+
+                            <td>
+                                Every proposed rule has a source reference.
+                            </td>
+
+                            <td>
+                                Rule catalogue.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="business">
+
+                            <td>TDD-BIZ-003</td>
+
+                            <td>Business Logic</td>
+
+                            <td>Rule citation verification</td>
+
+                            <td>Generated rule + cited source</td>
+
+                            <td>
+                                Independent review of cited lines supports the rule.
+                            </td>
+
+                            <td>
+                                Citation verifier confirms semantic support.
+                            </td>
+
+                            <td>
+                                Verification record.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="business">
+
+                            <td>TDD-BIZ-004</td>
+
+                            <td>Business Logic</td>
+
+                            <td>False rule detection</td>
+
+                            <td>Incorrectly interpreted condition</td>
+
+                            <td>
+                                Incorrect rule is identified as a discrepancy.
+                            </td>
+
+                            <td>
+                                Independent source verification does not agree with
+                                the generated rule.
+                            </td>
+
+                            <td>
+                                Discrepancy report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="business">
+
+                            <td>TDD-BIZ-005</td>
+
+                            <td>Business Logic</td>
+
+                            <td>Business branch scenario generation</td>
+
+                            <td>Validated business rule</td>
+
+                            <td>
+                                Test scenarios represent the discovered branch.
+                            </td>
+
+                            <td>
+                                Required scenario coverage is present.
+                            </td>
+
+                            <td>
+                                Rule → scenario mapping.
+                            </td>
+
+                        </tr>
+                        <tr data-category="business">
+
+                            <td>TDD-BIZ-006</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Business Logic
+                                </span>
+                            </td>
+
+                            <td>Classification recall</td>
+
+                            <td>Fixture containing seeded business rules mixed with technical decisions</td>
+
+                            <td>
+                                Every seeded business rule is classified as business.
+                            </td>
+
+                            <td>
+                                Zero seeded rules classified as technical or unclassified.
+                            </td>
+
+                            <td>
+                                Classification recall report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="business">
+
+                            <td>TDD-BIZ-007</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Business Logic
+                                </span>
+                            </td>
+
+                            <td>Verifier independence and spot-check</td>
+
+                            <td>Sample of verifier Pass and Fail decisions</td>
+
+                            <td>
+                                Verifier differs from the drafting run; a human sample agrees with the verifier at the configured rate.
+                            </td>
+
+                            <td>
+                                Independence configuration recorded; sampled disagreements are resolved.
+                            </td>
+
+                            <td>
+                                Verifier configuration and spot-check log.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="business">
+
+                            <td>TDD-BIZ-008</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Business Logic
+                                </span>
+                            </td>
+
+                            <td>Rules outside source code</td>
+
+                            <td>Program reading tables, parameters, or external configuration</td>
+
+                            <td>
+                                External sources of business logic are identified and listed.
+                            </td>
+
+                            <td>
+                                Each external source is reviewed or explicitly waived before Gate 2.
+                            </td>
+
+                            <td>
+                                External-rule register.
+                            </td>
+
+                        </tr>
+
+
+                        <!-- COVERAGE -->
+
+                        <tr data-category="coverage">
+
+                            <td>TDD-COV-001</td>
+
+                            <td>Coverage</td>
+
+                            <td>Decision-point coverage</td>
+
+                            <td>Decision inventory + scenarios</td>
+
+                            <td>
+                                Every discovered decision point maps to one or more
+                                scenarios.
+                            </td>
+
+                            <td>
+                                No unexplained uncovered decision points.
+                            </td>
+
+                            <td>
+                                Coverage matrix.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="coverage">
+
+                            <td>TDD-COV-002</td>
+
+                            <td>Coverage</td>
+
+                            <td>Scenario completeness</td>
+
+                            <td>Generated scenario set</td>
+
+                            <td>
+                                Scenario set represents all required branches.
+                            </td>
+
+                            <td>
+                                Missing scenarios are explicitly identified.
+                            </td>
+
+                            <td>
+                                Gap report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="coverage">
+
+                            <td>TDD-COV-003</td>
+
+                            <td>Coverage</td>
+
+                            <td>Scenario-generator regression</td>
+
+                            <td>Known decision-point fixture</td>
+
+                            <td>
+                                Scenario generator reproduces expected scenario set.
+                            </td>
+
+                            <td>
+                                No known business branch disappears between versions.
+                            </td>
+
+                            <td>
+                                Regression result.
+                            </td>
+
+                        </tr>
+                        <tr data-category="coverage">
+
+                            <td>TDD-COV-004</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Coverage
+                                </span>
+                            </td>
+
+                            <td>Branch-outcome coverage</td>
+
+                            <td>Decision inventory with outcomes (true/false, each WHEN, OTHER)</td>
+
+                            <td>
+                                Each outcome of every business-classified decision maps to a scenario.
+                            </td>
+
+                            <td>
+                                Outcome coverage meets the Section 8 threshold; uncovered outcomes have dispositions.
+                            </td>
+
+                            <td>
+                                Outcome coverage matrix.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="coverage">
+
+                            <td>TDD-COV-005</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Coverage
+                                </span>
+                            </td>
+
+                            <td>Measured legacy execution coverage</td>
+
+                            <td>Scenario set executed against the legacy system with coverage instrumentation</td>
+
+                            <td>
+                                Executed branches are recorded from the legacy run, not inferred from mapping.
+                            </td>
+
+                            <td>
+                                Mapped-but-not-executed outcomes are flagged as gaps.
+                            </td>
+
+                            <td>
+                                Legacy coverage report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="coverage">
+
+                            <td>TDD-COV-006</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Coverage
+                                </span>
+                            </td>
+
+                            <td>Coverage threshold gate</td>
+
+                            <td>Coverage report + configured thresholds</td>
+
+                            <td>
+                                Gate compares results with thresholds and gap dispositions.
+                            </td>
+
+                            <td>
+                                Below-threshold or undispositioned gaps block PASS.
+                            </td>
+
+                            <td>
+                                Gate decision.
+                            </td>
+
+                        </tr>
+
+
+                        <!-- FUNCTIONAL -->
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-001</td>
+
+                            <td>Functional</td>
+
+                            <td>Basic valid input</td>
+
+                            <td>Known valid test input</td>
+
+                            <td>
+                                Legacy and converted systems produce equivalent
+                                business output.
+                            </td>
+
+                            <td>
+                                Normalized outputs satisfy equivalence rules.
+                            </td>
+
+                            <td>
+                                LHS/RHS execution record.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-002</td>
+
+                            <td>Functional</td>
+
+                            <td>Invalid input</td>
+
+                            <td>Input violating an observed validation rule</td>
+
+                            <td>
+                                Converted system preserves expected legacy behavior.
+                            </td>
+
+                            <td>
+                                Error behavior matches configured equivalence criteria.
+                            </td>
+
+                            <td>
+                                Error comparison record.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-003</td>
+
+                            <td>Functional</td>
+
+                            <td>Business branch: condition satisfied</td>
+
+                            <td>Input satisfying the branch condition</td>
+
+                            <td>
+                                New system follows equivalent behavior.
+                            </td>
+
+                            <td>
+                                Outputs and relevant side effects match.
+                            </td>
+
+                            <td>
+                                Scenario execution trace.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-004</td>
+
+                            <td>Functional</td>
+
+                            <td>Business branch: alternate outcome (else / WHEN / OTHER)</td>
+
+                            <td>Input causing the alternate outcome</td>
+
+                            <td>
+                                New system follows equivalent behavior.
+                            </td>
+
+                            <td>
+                                Outputs and relevant side effects match.
+                            </td>
+
+                            <td>
+                                Scenario execution trace.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-005</td>
+
+                            <td>Functional</td>
+
+                            <td>Boundary condition</td>
+
+                            <td>Input at or around a discovered boundary</td>
+
+                            <td>
+                                Legacy and converted behavior remains equivalent.
+                            </td>
+
+                            <td>
+                                Boundary scenario passes according to the configured
+                                oracle.
+                            </td>
+
+                            <td>
+                                Boundary comparison.
+                            </td>
+
+                        </tr>
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-006</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Functional
+                                </span>
+                            </td>
+
+                            <td>Numeric fidelity</td>
+
+                            <td>Packed decimal (COMP-3), signed fields, ROUNDED, ON SIZE ERROR, truncation cases</td>
+
+                            <td>
+                                Converted numeric results match legacy to the declared scale and rounding mode.
+                            </td>
+
+                            <td>
+                                Zero differences on amounts and counters; overflow behavior matches legacy.
+                            </td>
+
+                            <td>
+                                Numeric comparison record.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-007</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Functional
+                                </span>
+                            </td>
+
+                            <td>Character encoding and collation</td>
+
+                            <td>EBCDIC/ASCII data, mixed case, sort keys, comparison of alphanumerics</td>
+
+                            <td>
+                                String comparison, sort order, and conversions match legacy behavior.
+                            </td>
+
+                            <td>
+                                No difference in ordering or comparison outcomes.
+                            </td>
+
+                            <td>
+                                Encoding and collation report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-008</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Functional
+                                </span>
+                            </td>
+
+                            <td>Date and time handling</td>
+
+                            <td>Century windowing, leap days, month-end, invalid dates</td>
+
+                            <td>
+                                Date logic matches legacy, including invalid-date handling.
+                            </td>
+
+                            <td>
+                                All date scenarios equivalent under configured rules.
+                            </td>
+
+                            <td>
+                                Date scenario results.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-009</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Functional
+                                </span>
+                            </td>
+
+                            <td>File status, abend, and return codes</td>
+
+                            <td>I/O failure, not-found, duplicate key, abnormal termination</td>
+
+                            <td>
+                                Error paths and return codes match legacy behavior or an approved mapping.
+                            </td>
+
+                            <td>
+                                Each mapped code is documented; unmapped codes fail.
+                            </td>
+
+                            <td>
+                                Error-path comparison.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-010</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Functional
+                                </span>
+                            </td>
+
+                            <td>Record layout semantics</td>
+
+                            <td>REDEFINES, OCCURS, group MOVE, alignment/padding</td>
+
+                            <td>
+                                Converted layouts read and write identical record bytes.
+                            </td>
+
+                            <td>
+                                Byte-level or field-level equivalence per configuration.
+                            </td>
+
+                            <td>
+                                Layout comparison.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-011</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Functional
+                                </span>
+                            </td>
+
+                            <td>Online / screen transaction replay</td>
+
+                            <td>CICS transaction sequences (pseudo-conversational, PF-key navigation, BMS field input)</td>
+
+                            <td>
+                                Recorded terminal interaction is replayed against both systems.
+                            </td>
+
+                            <td>
+                                Screen output, commarea/state, and files or tables match; unreplayed paths are classified.
+                            </td>
+
+                            <td>
+                                Transaction replay trace.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-012</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Functional
+                                </span>
+                            </td>
+
+                            <td>Batch restart and checkpoint</td>
+
+                            <td>Job interrupted mid-run then restarted</td>
+
+                            <td>
+                                Restarted run yields the same end state as an uninterrupted run and as legacy.
+                            </td>
+
+                            <td>
+                                No duplicate or missing records.
+                            </td>
+
+                            <td>
+                                Restart comparison.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="functional">
+
+                            <td>TDD-FUN-013</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Functional
+                                </span>
+                            </td>
+
+                            <td>Concurrency and locking</td>
+
+                            <td>Simultaneous updates to the same record</td>
+
+                            <td>
+                                Locking / conflict behavior matches legacy or an approved mapping.
+                            </td>
+
+                            <td>
+                                No lost updates; differences are dispositioned.
+                            </td>
+
+                            <td>
+                                Concurrency test log.
+                            </td>
+
+                        </tr>
+
+
+                        <!-- DETERMINISM -->
+
+                        <tr data-category="determinism">
+
+                            <td>TDD-DET-001</td>
+
+                            <td>Determinism</td>
+
+                            <td>Timestamp normalization</td>
+
+                            <td>Outputs containing timestamps</td>
+
+                            <td>
+                                Non-semantic timestamp differences are normalized.
+                            </td>
+
+                            <td>
+                                Only configured non-semantic differences are ignored.
+                            </td>
+
+                            <td>
+                                Normalization log.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="determinism">
+
+                            <td>TDD-DET-002</td>
+
+                            <td>Determinism</td>
+
+                            <td>Sequence-number normalization</td>
+
+                            <td>Outputs containing generated sequence identifiers</td>
+
+                            <td>
+                                Known non-semantic identifiers are normalized.
+                            </td>
+
+                            <td>
+                                Business-significant values remain comparable.
+                            </td>
+
+                            <td>
+                                Normalization configuration.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="determinism">
+
+                            <td>TDD-DET-003</td>
+
+                            <td>Determinism</td>
+
+                            <td>Sort-order normalization</td>
+
+                            <td>Outputs where ordering is non-semantic</td>
+
+                            <td>
+                                Configured collections are normalized before comparison.
+                            </td>
+
+                            <td>
+                                No genuine business difference is hidden.
+                            </td>
+
+                            <td>
+                                Comparison trace.
+                            </td>
+
+                        </tr>
+                        <tr data-category="determinism">
+
+                            <td>TDD-DET-004</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Determinism
+                                </span>
+                            </td>
+
+                            <td>Repeat-run stability</td>
+
+                            <td>Same scenario run multiple times on both systems</td>
+
+                            <td>
+                                Results are stable after configured normalization.
+                            </td>
+
+                            <td>
+                                No unexplained variance between runs.
+                            </td>
+
+                            <td>
+                                Repeat-run report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="determinism">
+
+                            <td>TDD-DET-005</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Determinism
+                                </span>
+                            </td>
+
+                            <td>Normalization configuration approval</td>
+
+                            <td>Normalization rules (timestamps, IDs, ordering)</td>
+
+                            <td>
+                                Each rule has an owner, justification, and scope.
+                            </td>
+
+                            <td>
+                                Unapproved or unscoped normalization rules fail the gate.
+                            </td>
+
+                            <td>
+                                Approved normalization register.
+                            </td>
+
+                        </tr>
+
+
+                        <!-- SECURITY -->
+
+                        <tr data-category="security">
+
+                            <td>TDD-SEC-001</td>
+
+                            <td>Security</td>
+
+                            <td>Secret detection</td>
+
+                            <td>Source and generated artifacts</td>
+
+                            <td>
+                                Secrets are identified and handled according to policy.
+                            </td>
+
+                            <td>
+                                No unapproved secret reaches the output/deployment
+                                path.
+                            </td>
+
+                            <td>
+                                Security scan report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="security">
+
+                            <td>TDD-SEC-002</td>
+
+                            <td>Security</td>
+
+                            <td>Static security analysis</td>
+
+                            <td>Generated Java code</td>
+
+                            <td>
+                                Static analysis is executed.
+                            </td>
+
+                            <td>
+                                Results satisfy the configured security acceptance
+                                policy.
+                            </td>
+
+                            <td>
+                                Static-analysis report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="security">
+
+                            <td>TDD-SEC-003</td>
+
+                            <td>Security</td>
+
+                            <td>Critical finding gate</td>
+
+                            <td>High/critical security finding</td>
+
+                            <td>
+                                Workflow does not proceed automatically.
+                            </td>
+
+                            <td>
+                                Finding is resolved, accepted through the required
+                                process, or routed for human review.
+                            </td>
+
+                            <td>
+                                Security decision record.
+                            </td>
+
+                        </tr>
+                        <tr data-category="security">
+
+                            <td>TDD-SEC-004</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Security
+                                </span>
+                            </td>
+
+                            <td>Sensitive data handling</td>
+
+                            <td>Test data, oracle outputs, logs, and reports containing PII/PCI-like fields</td>
+
+                            <td>
+                                Sensitive fields are masked or synthetic in all stored evidence.
+                            </td>
+
+                            <td>
+                                No unmasked sensitive data in evidence packages or logs.
+                            </td>
+
+                            <td>
+                                Data-handling scan report.
+                            </td>
+
+                        </tr>
+
+
+                        <!-- PERFORMANCE -->
+
+                        <tr data-category="performance">
+
+                            <td>TDD-PERF-001</td>
+
+                            <td>Performance</td>
+
+                            <td>Execution time</td>
+
+                            <td>Representative workload</td>
+
+                            <td>
+                                Execution time is measured.
+                            </td>
+
+                            <td>
+                                Result satisfies the customer-approved performance
+                                threshold.
+                            </td>
+
+                            <td>
+                                Performance report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="performance">
+
+                            <td>TDD-PERF-002</td>
+
+                            <td>Performance</td>
+
+                            <td>Batch-window suitability</td>
+
+                            <td>Representative batch workload</td>
+
+                            <td>
+                                System completes within the configured batch window.
+                            </td>
+
+                            <td>
+                                Measured result satisfies the agreed threshold.
+                            </td>
+
+                            <td>
+                                Benchmark evidence.
+                            </td>
+
+                        </tr>
+                        <tr data-category="performance">
+
+                            <td>TDD-PERF-003</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Performance
+                                </span>
+                            </td>
+
+                            <td>Legacy baseline comparison</td>
+
+                            <td>Same workload on legacy and converted systems</td>
+
+                            <td>
+                                Converted performance is reported relative to the legacy baseline.
+                            </td>
+
+                            <td>
+                                Result is within the customer-approved tolerance where a baseline exists.
+                            </td>
+
+                            <td>
+                                Baseline comparison report.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="performance">
+
+                            <td>TDD-PERF-004</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Performance
+                                </span>
+                            </td>
+
+                            <td>Throughput and resource use</td>
+
+                            <td>Representative volume</td>
+
+                            <td>
+                                Throughput, CPU, and memory are measured.
+                            </td>
+
+                            <td>
+                                Metrics meet configured requirements where set.
+                            </td>
+
+                            <td>
+                                Resource report.
+                            </td>
+
+                        </tr>
+
+
+                        <!-- TRACEABILITY -->
+
+                        <tr data-category="traceability">
+
+                            <td>TDD-TRC-001</td>
+
+                            <td>Traceability</td>
+
+                            <td>Rule-to-test mapping</td>
+
+                            <td>Business rule + scenario</td>
+
+                            <td>
+                                Every tested rule has a traceable scenario.
+                            </td>
+
+                            <td>
+                                Mapping exists in the evaluation record.
+                            </td>
+
+                            <td>
+                                Traceability matrix.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="traceability">
+
+                            <td>TDD-TRC-002</td>
+
+                            <td>Traceability</td>
+
+                            <td>Test-to-source mapping</td>
+
+                            <td>Test case</td>
+
+                            <td>
+                                Test case can be traced to source behavior.
+                            </td>
+
+                            <td>
+                                Source reference exists.
+                            </td>
+
+                            <td>
+                                Test metadata.
+                            </td>
+
+                        </tr>
+
+                        <tr data-category="traceability">
+
+                            <td>TDD-TRC-003</td>
+
+                            <td>Traceability</td>
+
+                            <td>Failure trace</td>
+
+                            <td>Failed scenario</td>
+
+                            <td>
+                                Failure can be traced to its scenario, source rule,
+                                execution output, and comparison result.
+                            </td>
+
+                            <td>
+                                Complete failure record exists.
+                            </td>
+
+                            <td>
+                                Error trace.
+                            </td>
+
+                        </tr>
+
+                        <!-- APPROVAL -->
+
+                        <tr data-category="approval">
+
+                            <td>TDD-APR-001</td>
+
+                            <td>Approval</td>
+
+                            <td>Evaluation gate</td>
+
+                            <td>Complete evaluation report</td>
+
+                            <td>
+                                Gate evaluates the complete evidence set.
+                            </td>
+
+                            <td>
+                                No mandatory gate condition remains unresolved.
+                            </td>
+
+                            <td>
+                                Gate decision.</td>
+
+                        </tr>
+
+                        <tr data-category="approval">
+
+                            <td>TDD-APR-002</td>
+
+                            <td>Approval</td>
+
+                            <td>Human validation</td>
+
+                            <td>Final evaluation package</td>
+
+                            <td>
+                                Human reviewer can inspect evidence and exceptions.
+                            </td>
+
+                            <td>
+                                Required approval is recorded.
+                            </td>
+
+                            <td>
+                                Approval record.
+                            </td>
+
+                        </tr>
+                        <tr data-category="approval">
+
+                            <td>TDD-APR-003</td>
+
+                            <td>
+                                <span class="badge badge-info">
+                                    Approval
+                                </span>
+                            </td>
+
+                            <td>Reviewer authorization and independence</td>
+
+                            <td>Approval record</td>
+
+                            <td>
+                                Approver role and independence from the translation team are recorded.
+                            </td>
+
+                            <td>
+                                Approval by an unauthorized or non-independent party is rejected.
+                            </td>
+
+                            <td>
+                                Approval roster and record.
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p class="small">
+                The exact customer-specific test inputs, expected values, thresholds,
+                and business rules must be populated from the target COBOL repository,
+                legacy execution results, and customer-approved requirements.
+            </p>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- COMPARISON -->
+        <!-- ========================================================= -->
+
+        <section id="comparison">
+
+            <h2>7. LHS vs RHS Evaluation</h2>
+
+            <div class="grid-2">
+
+                <div class="card">
+
+                    <h3>RHS — Legacy Oracle</h3>
+
+                    <ul class="checklist">
+                        <li>Legacy COBOL execution</li>
+                        <li>Known input scenario</li>
+                        <li>Observed output</li>
+                        <li>Observed error behavior</li>
+                        <li>Relevant side effects</li>
+                        <li>Execution metadata</li>
+                    </ul>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>LHS — Converted System</h3>
+
+                    <ul class="checklist">
+                        <li>Converted Java execution</li>
+                        <li>Same test input</li>
+                        <li>Observed output</li>
+                        <li>Observed error behavior</li>
+                        <li>Relevant side effects</li>
+                        <li>Execution metadata</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <h3>Comparison Pipeline</h3>
+
+            <pre>
+Same test input
+    │                     │
+    ▼                     ▼
+Legacy System         New System
+    │                     │
+    ▼                     ▼
+Output Capture        Output Capture
+    │                     │
+    ▼                     ▼
+Normalization         Normalization
+    │                     │
+    └──────────┬──────────┘
+               ▼
+      Comparison Engine
+               │
+               ▼
+      PASS / FAIL / REVIEW
+    </pre>
+
+            <h3>Comparison Rules</h3>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Difference Type</th>
+                            <th>Default Treatment</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Business value difference</td>
+                            <td>
+                                <span class="badge badge-fail">FAIL</span>
+                            </td>
+                            <td>
+                                Potential behavioral mismatch.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Business-rule branch difference</td>
+                            <td>
+                                <span class="badge badge-fail">FAIL</span>
+                            </td>
+                            <td>
+                                Different business behavior.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Configured timestamp difference</td>
+                            <td>
+                                Normalize
+                            </td>
+                            <td>
+                                May be non-semantic.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Configured sequence identifier</td>
+                            <td>
+                                Normalize
+                            </td>
+                            <td>
+                                May be generated independently.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Configured non-semantic ordering</td>
+                            <td>
+                                Normalize
+                            </td>
+                            <td>
+                                Ordering may not represent business behavior.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Unclassified difference</td>
+                            <td>
+                                <span class="badge badge-warn">REVIEW</span>
+                            </td>
+                            <td>
+                                Must not be silently ignored.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- COVERAGE -->
+        <!-- ========================================================= -->
+
+        <section id="coverage">
+
+            <h2>8. Coverage & Completeness</h2>
+
+            <div class="principle danger">
+                <strong>All tests passing is not sufficient by itself.</strong>
+
+                If the scenario generator misses a business rule, the missing rule
+                could never fail a test. Therefore, scenario completeness must be
+                evaluated independently.
+            </div>
+
+            <h3>Coverage Matrix</h3>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Decision Point</th>
+                            <th>Business Rule</th>
+                            <th>Scenario</th>
+                            <th>Legacy Executed</th>
+                            <th>New Executed</th>
+                            <th>Comparison</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>DP-001</td>
+                            <td>BR-001</td>
+                            <td>TC-001</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Equivalent</td>
+                            <td><span class="badge badge-pass">PASS</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>DP-002</td>
+                            <td>BR-002</td>
+                            <td>TC-002</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>Equivalent</td>
+                            <td><span class="badge badge-pass">PASS</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>DP-003</td>
+                            <td>BR-003</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td><span class="badge badge-fail">GAP</span></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <h3>Coverage Metrics and Thresholds</h3>
+
+            <pre>
+Decision Coverage   = Decision points with any scenario / Total discovered decision points
+Outcome Coverage    = Decision outcomes with a scenario   / Total discovered outcomes
+                      (each true/false, WHEN, OTHER)
+Executed Coverage   = Outcomes executed in the legacy run  / Total discovered outcomes
+Classification Rate = Classified decision points           / Total discovered decision points
+    </pre>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Metric</th><th>Proposed default (customer to confirm)</th><th>If not met</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Classification Rate</td><td>100%; unclassified = 0</td><td>Blocks Gate 2</td></tr>
+                        <tr><td>Outcome Coverage (business-classified)</td><td>100%, or each gap has an approved disposition</td><td>Blocks final PASS</td></tr>
+                        <tr><td>Executed Coverage</td><td>Project-defined target; mapped-but-not-executed outcomes listed</td><td>Blocks final PASS</td></tr>
+                        <tr><td>Decision Coverage (technical/control)</td><td>Reported; sampled for review</td><td>Review</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="principle warning">
+                <strong>Gap disposition</strong>
+                A gap is "accounted for" only when it has a recorded disposition
+                (fix, waive with rationale and approver, or out-of-scope with
+                approval). A written gap report alone does not satisfy the gate.
+            </div>
+
+            <div class="principle warning">
+                <strong>Reference experiment</strong>
+                In the team's AWS CardDemo experiment, the parser identified 47
+                decision points while only 4 were actual business rules
+                <em>[scope to be stated: which program(s) or module this count covers]</em>. This is
+                evidence for separating structural decision discovery from business
+                rule classification. It should not be treated as the universal
+                decision-point count for another COBOL repository.
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- EVALUATION GATES -->
+        <!-- ========================================================= -->
+
+        <section id="gates">
+
+            <h2>9. Evaluation Gates</h2>
+
+            <div class="gate">
+
+                <h3>Gate 1 — Source Readiness</h3>
+
+                <div class="gate-rule">
+                    <div class="gate-number">1</div>
+                    <div>
+                        Required source files discovered.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">2</div>
+                    <div>
+                        Required copybooks/dependencies available.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">3</div>
+                    <div>
+                        Parser can establish a valid structural representation.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">4</div>
+                    <div>
+                        Parser completeness is reconciled against an independent construct count (TDD-SRC-005).
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="gate">
+
+                <h3>Gate 2 — Business Logic Readiness</h3>
+
+                <div class="gate-rule">
+                    <div class="gate-number">1</div>
+                    <div>
+                        Decision points have been inventoried.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">2</div>
+                    <div>
+                        Proposed business rules have source evidence.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">3</div>
+                    <div>
+                        Citations have been independently verified.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">4</div>
+                    <div>
+                        Uncovered decision points are explicitly identified.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">5</div>
+                    <div>
+                        Every decision point is classified with rationale; classification recall passes; verifier independence is documented; external rule sources are reviewed or waived.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="gate">
+
+                <h3>Gate 3 — TDD Readiness</h3>
+
+                <div class="gate-rule">
+                    <div class="gate-number">1</div>
+                    <div>
+                        Required scenarios exist.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">2</div>
+                    <div>
+                        Each scenario has an input and expected behavioral basis.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">3</div>
+                    <div>
+                        Scenarios can execute against the legacy system.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">4</div>
+                    <div>
+                        Outcome coverage meets configured thresholds; a legacy oracle exists for each in-scope program type (batch, online/CICS).
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="gate">
+
+                <h3>Gate 4 — Functional Equivalence</h3>
+
+                <div class="gate-rule">
+                    <div class="gate-number">1</div>
+                    <div>
+                        All required scenarios execute against the converted system.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">2</div>
+                    <div>
+                        Outputs are captured.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">3</div>
+                    <div>
+                        Configured non-semantic differences are normalized.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">4</div>
+                    <div>
+                        Business-significant differences fail evaluation.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">5</div>
+                    <div>
+                        COBOL fidelity tests (numeric, encoding, dates, layouts, error paths) are executed for in-scope programs.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="gate">
+
+                <h3>Gate 5 — Security & Performance</h3>
+
+                <div class="gate-rule">
+                    <div class="gate-number">1</div>
+                    <div>
+                        Security checks complete.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">2</div>
+                    <div>
+                        No unresolved mandatory security findings.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">3</div>
+                    <div>
+                        Performance is measured against customer-approved thresholds.
+                    </div>
+                </div>
+
+                <div class="gate-rule">
+                    <div class="gate-number">4</div>
+                    <div>
+                        Evidence contains no unmasked sensitive data.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="gate">
+
+                <h3>Final Evaluation Gate</h3>
+
+                <div class="principle success">
+
+                    <strong>PASS requires all mandatory conditions to be satisfied.</strong>
+
+                    <ul>
+                        <li>Source is sufficiently parsed.</li>
+                        <li>Business-rule evidence is traceable.</li>
+                        <li>Coverage thresholds are met and every gap has a recorded disposition.</li>
+                        <li>Classification recall passes and no decision point is unclassified.</li>
+                        <li>Required scenarios execute.</li>
+                        <li>Legacy and converted behavior satisfy equivalence criteria.</li>
+                        <li>No unresolved mandatory security failure remains.</li>
+                        <li>Performance requirements are satisfied where applicable.</li>
+                        <li>Known gaps and limitations are explicitly reported.</li>
+                    </ul>
+
+                </div>
+
+                <div class="principle danger">
+
+                    <strong>FAIL / REWORK</strong>
+
+                    Any mandatory criterion that is not satisfied routes the artifact
+                    to the appropriate correction or human-review path rather than
+                    allowing the workflow to claim completion.
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- SECURITY -->
+        <!-- ========================================================= -->
+
+        <section id="security">
+
+            <h2>10. Security Evaluation Layer</h2>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Area</th>
+                            <th>Evaluation</th>
+                            <th>Failure Behavior</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Source secrets</td>
+                            <td>
+                                Scan incoming source and configuration artifacts.
+                            </td>
+                            <td>
+                                Block or route according to security policy.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Generated code</td>
+                            <td>
+                                Static security analysis.
+                            </td>
+                            <td>
+                                Findings enter evaluation/rework.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Dependencies</td>
+                            <td>
+                                Dependency/security checks where configured.
+                            </td>
+                            <td>
+                                Unresolved mandatory finding blocks progression.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Artifacts</td>
+                            <td>
+                                Verify generated evaluation artifacts are traceable.
+                            </td>
+                            <td>
+                                Missing evidence causes evaluation failure.
+                            </td>
+                        </tr>
+
+                    
+                        <tr>
+                            <td>Sensitive data (PII / PCI)</td>
+                            <td>
+                                Mask or synthesize sensitive fields in test data, oracle outputs, logs, and evidence.
+                            </td>
+                            <td>
+                                Unmasked sensitive data blocks packaging (TDD-SEC-004).
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- PERFORMANCE -->
+        <!-- ========================================================= -->
+
+        <section id="performance">
+
+            <h2>11. Performance Evaluation Layer</h2>
+
+            <div class="principle">
+                <strong>Performance thresholds are configuration, not assumptions.</strong>
+
+                The framework measures performance but does not invent the required
+                target. Customer/project-approved thresholds should populate the
+                evaluation configuration.
+            </div>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Measurement</th>
+                            <th>Expected Configuration</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Execution time</td>
+                            <td>End-to-end execution duration</td>
+                            <td>Customer/project threshold</td>
+                        </tr>
+
+                        <tr>
+                            <td>Batch window</td>
+                            <td>Completion time for representative workload</td>
+                            <td>Defined batch-window requirement</td>
+                        </tr>
+
+                        <tr>
+                            <td>Throughput</td>
+                            <td>Records / transactions processed over time</td>
+                            <td>Baseline or customer requirement</td>
+                        </tr>
+
+                        <tr>
+                            <td>Resource utilization</td>
+                            <td>CPU / memory / relevant runtime metrics</td>
+                            <td>Configured where required</td>
+                        </tr>
+
+                    
+                        <tr>
+                            <td>Legacy baseline</td>
+                            <td>
+                                Same workload measured on the legacy system where available.
+                            </td>
+                            <td>
+                                Compared with the approved tolerance (TDD-PERF-003).
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TRACEABILITY -->
+        <!-- ========================================================= -->
+
+        <section id="traceability">
+
+            <h2>12. End-to-End Traceability</h2>
+
+            <pre>
+COBOL Source
+    │
+    ▼
+Decision Point
+    │
+    ▼
+Business Rule
+    │
+    ▼
+Test Scenario
+    │
+    ├──────────────► Legacy Execution
+    │                       │
+    │                       ▼
+    │                  RHS / Oracle
+    │
+    └──────────────► New Execution
+                            │
+                            ▼
+                       LHS Output
+                            │
+                            ▼
+                       Normalization
+                            │
+                            ▼
+                     Comparison Engine
+                            │
+                            ▼
+                      Test Result
+                            │
+                            ▼
+                    Evaluation Gate
+                            │
+                            ▼
+                  Human / Customer Review
+    </pre>
+
+            <h3>Required Trace Record</h3>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Artifact</th>
+                            <th>Must Link To</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Source file</td>
+                            <td>Decision point</td>
+                        </tr>
+
+                        <tr>
+                            <td>Decision point</td>
+                            <td>Business rule / classification</td>
+                        </tr>
+
+                        <tr>
+                            <td>Business rule</td>
+                            <td>Test scenario</td>
+                        </tr>
+
+                        <tr>
+                            <td>Test scenario</td>
+                            <td>Legacy execution</td>
+                        </tr>
+
+                        <tr>
+                            <td>Test scenario</td>
+                            <td>Converted-system execution</td>
+                        </tr>
+
+                        <tr>
+                            <td>Execution</td>
+                            <td>Captured outputs</td>
+                        </tr>
+
+                        <tr>
+                            <td>Outputs</td>
+                            <td>Comparison result</td>
+                        </tr>
+
+                        <tr>
+                            <td>Comparison result</td>
+                            <td>Evaluation decision</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- HUMAN -->
+        <!-- ========================================================= -->
+
+        <section id="human">
+
+            <h2>13. Human Review & Customer Validation</h2>
+
+            <div class="grid-2">
+
+                <div class="card">
+
+                    <h3>Automated Path</h3>
+
+                    <ul class="checklist">
+                        <li>Run parser</li>
+                        <li>Build decision inventory</li>
+                        <li>Generate and verify rule records</li>
+                        <li>Generate scenarios</li>
+                        <li>Execute legacy oracle</li>
+                        <li>Execute converted system</li>
+                        <li>Compare outputs</li>
+                        <li>Calculate coverage</li>
+                        <li>Run security/performance checks</li>
+                    </ul>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>Human Path</h3>
+
+                    <ul class="checklist">
+                        <li>Review unresolved exceptions</li>
+                        <li>Review uncovered decision points</li>
+                        <li>Review disputed business rules</li>
+                        <li>Review security findings where required</li>
+                        <li>Validate customer-specific expectations</li>
+                        <li>Approve final evidence</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="principle purple">
+                <strong>Human review should focus on uncertainty.</strong>
+                The framework is designed to reduce the amount of code and evidence
+                that a person must manually inspect, while ensuring unresolved gaps
+                are not hidden.
+            </div>
+
+        
+            <div class="principle warning">
+                <strong>Approval criteria</strong>
+                Approvers are named roles (for example business owner, COBOL SME,
+                security reviewer) who are independent of the translation work.
+                Each approval records what was reviewed: exceptions, gap
+                dispositions, waived rules, normalization rules, and sampled
+                classification decisions (TDD-APR-003).
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- LIMITATIONS -->
+        <!-- ========================================================= -->
+
+        <section id="limitations">
+
+            <h2>14. Known Limitations</h2>
+
+            <p class="subtitle">
+                These limitations were explicitly identified during the team's
+                investigation and should remain visible in the evaluation deliverable.
+            </p>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Limitation</th>
+                            <th>Impact</th>
+                            <th>Framework Response</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Parser cannot read all legacy code</td>
+                            <td>
+                                Some source behavior may remain inaccessible.
+                            </td>
+                            <td>
+                                Log unreachable/unparsed code instead of treating it
+                                as empty or successful.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Copybooks may be required</td>
+                            <td>
+                                Parsing may be invalid without dependencies.
+                            </td>
+                            <td>
+                                Dependency readiness is an explicit gate.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Copybook expansion can shift line numbers</td>
+                            <td>
+                                Source citations can reference incorrect locations.
+                            </td>
+                            <td>
+                                A source-location correction/mapping layer is required.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Screen-based / CICS programs need a replay oracle</td>
+                            <td>
+                                Online transactions cannot be validated with simple batch replay; for CICS-heavy repositories this covers most programs.
+                            </td>
+                            <td>
+                                Build terminal/transaction replay (TDD-FUN-011) or explicitly classify unreplayed paths; gate 3 requires an oracle per program type.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Rules may exist outside source code</td>
+                            <td>
+                                Database tables or external configuration may contain
+                                business logic not visible in COBOL.
+                            </td>
+                            <td>
+                                Record the missing source of authority and require
+                                additional validation.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Legacy behavior may itself be incorrect</td>
+                            <td>
+                                Behavioral equivalence does not establish business
+                                correctness.
+                            </td>
+                            <td>
+                                Clearly distinguish behavioral equivalence from
+                                business-intent validation.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Scenario-generation errors</td>
+                            <td>
+                                Missing scenarios can hide missing business rules.
+                            </td>
+                            <td>
+                                Test the scenario generator itself against known
+                                fixtures and compare against parser-derived coverage.
+                            </td>
+                        </tr>
+
+                    
+                        <tr>
+                            <td>Parser may silently skip constructs</td>
+                            <td>
+                                Skipped constructs never enter the decision inventory.
+                            </td>
+                            <td>
+                                Reconcile against an independent construct count (TDD-SRC-005).
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Decision misclassification</td>
+                            <td>
+                                A business rule labeled technical is never tested.
+                            </td>
+                            <td>
+                                Classification recall test and human sampling (Section 4.5, TDD-BIZ-006).
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>LLM citation verifier is not fully independent</td>
+                            <td>
+                                Verifier may share blind spots with the drafter.
+                            </td>
+                            <td>
+                                Separate model or deterministic checks plus human spot-check (TDD-BIZ-007).
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>COBOL numeric and encoding semantics</td>
+                            <td>
+                                Rounding, packed decimal, and collation differences can pass ordinary tests.
+                            </td>
+                            <td>
+                                Dedicated fidelity tests (TDD-FUN-006 to 010).
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- EXAMPLE -->
+        <!-- ========================================================= -->
+
+        <section>
+
+            <h2>15. End-to-End Example</h2>
+
+            <div class="example">
+
+                <div class="step">
+
+                    <div class="step-num">1</div>
+
+                    <div>
+                        <strong>COBOL source discovered</strong><br>
+                        Program and required copybooks are registered.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">2</div>
+
+                    <div>
+                        <strong>Parser identifies decision points</strong><br>
+                        Structural decisions are placed into the decision inventory.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">3</div>
+
+                    <div>
+                        <strong>Business rule is drafted</strong><br>
+                        The AI describes the rule and cites the relevant source.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">4</div>
+
+                    <div>
+                        <strong>Citation is independently verified</strong><br>
+                        A second process checks whether the cited source actually
+                        supports the rule.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">5</div>
+
+                    <div>
+                        <strong>Scenario is created</strong><br>
+                        The rule becomes an executable test scenario.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">6</div>
+
+                    <div>
+                        <strong>Legacy system executes</strong><br>
+                        The legacy output becomes the behavioral oracle.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">7</div>
+
+                    <div>
+                        <strong>Converted Java executes</strong><br>
+                        The same scenario is executed against the new system.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">8</div>
+
+                    <div>
+                        <strong>Outputs are normalized</strong><br>
+                        Only explicitly configured non-semantic differences are
+                        normalized.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">9</div>
+
+                    <div>
+                        <strong>Comparison engine evaluates behavior</strong><br>
+                        Business-significant differences result in failure.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">10</div>
+
+                    <div>
+                        <strong>Coverage is evaluated</strong><br>
+                        The scenario set is compared against the discovered
+                        decision-point inventory.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">11</div>
+
+                    <div>
+                        <strong>Final evaluation gate</strong><br>
+                        The complete evidence package is evaluated.
+                    </div>
+
+                </div>
+
+                <div class="step">
+
+                    <div class="step-num">12</div>
+
+                    <div>
+                        <strong>Customer / human validation</strong><br>
+                        Required exceptions and final evidence are reviewed.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- FINAL DEFINITION -->
+        <!-- ========================================================= -->
+
+        <section>
+
+            <h2>16. Definition of Done</h2>
+
+            <div class="card">
+
+                <div class="status-box">
+
+                    <div class="status">
+                        <strong>Source Coverage</strong>
+                        All reachable source areas are accounted for, with
+                        unreachable areas explicitly reported.
+                    </div>
+
+                    <div class="status">
+                        <strong>Business Logic</strong>
+                        Business rules have source traceability and verification.
+                    </div>
+
+                    <div class="status">
+                        <strong>Scenario Coverage</strong>
+                        Every outcome of each business-classified decision point maps to an executable scenario and meets the Section 8 thresholds.
+                    </div>
+
+                    <div class="status">
+                        <strong>Behavioral Equivalence</strong>
+                        Required legacy-vs-new comparisons satisfy the configured
+                        equivalence criteria.
+                    </div>
+
+                    <div class="status">
+                        <strong>Security</strong>
+                        Mandatory security checks pass or have an explicitly
+                        approved disposition.
+                    </div>
+
+                    <div class="status">
+                        <strong>Performance</strong>
+                        Configured performance requirements are satisfied where
+                        applicable.
+                    </div>
+
+                    <div class="status">
+                        <strong>Traceability</strong>
+                        Source → Rule → Scenario → Execution → Comparison → Decision
+                        is reconstructable.
+                    </div>
+
+                    <div class="status">
+                        <strong>Human Validation</strong>
+                        Required human/customer review is recorded.
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="principle success">
+
+                <strong>Final definition</strong>
+
+                The modernization is considered evaluation-complete only when the
+                required scenarios pass, discovered decision points are accounted
+                for, behavioral differences are resolved or explicitly dispositioned,
+                security/performance requirements are satisfied where applicable,
+                and the resulting evidence is available for human/customer
+                validation.
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- DOCUMENT STATUS -->
+        <!-- ========================================================= -->
+
+        <section>
+
+            <h2>17. Document Status</h2>
+
+            <div class="card">
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <tbody>
+
+                            <tr>
+                                <th>Document</th>
+                                <td>COBOL Modernization TDD & Evaluation Framework</td>
+                            </tr>
+
+                            <tr>
+                                <th>Primary Purpose</th>
+                                <td>
+                                    Business Logic Evaluation + TDD/Test-Case Catalogue
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Evaluation Model</th>
+                                <td>LHS vs RHS / Legacy Behavioral Oracle</td>
+                            </tr>
+
+                            <tr>
+                                <th>Primary Risk Addressed</th>
+                                <td>
+                                    Silent omission of business rules and incomplete
+                                    test coverage
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Primary Evidence</th>
+                                <td>
+                                    Source traceability, decision inventory,
+                                    rule catalogue, test scenarios, execution results,
+                                    comparison results, coverage report
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Customer-Specific Values</th>
+                                <td>
+                                    To be populated from the actual COBOL repository,
+                                    legacy outputs, requirements, and approved
+                                    thresholds
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        
+            <div class="principle success">
+                <strong>Revision 2 changes</strong>
+                Coverage thresholds and gap dispositions; decision classification and recall (4.5);
+                verifier independence; COBOL fidelity, CICS replay, restart and concurrency tests;
+                sensitive-data and legacy-baseline tests; clarified LHS/RHS diagrams; Traceability nav link.
+                Proposed threshold values remain subject to customer confirmation.
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+
+        <div class="container">
+            <strong>SkyAgentic</strong> — COBOL Modernization TDD & Evaluation Framework
+            <br>
+            Evaluation evidence should remain reproducible, traceable, and
+            independently verifiable.
+        </div>
+
+    </footer>
+
+    <script>
+
+        const searchInput = document.getElementById("searchInput");
+        const categoryFilter = document.getElementById("categoryFilter");
+        const rows = Array.from(
+            document.querySelectorAll("#testTable tbody tr")
+        );
+
+        function filterTable() {
+
+            const search = searchInput.value.toLowerCase().trim();
+            const category = categoryFilter.value;
+
+            rows.forEach(row => {
+
+                const text = row.innerText.toLowerCase();
+
+                const matchesSearch =
+                    !search || text.includes(search);
+
+                const matchesCategory =
+                    category === "all" ||
+                    row.dataset.category === category;
+
+                row.style.display =
+                    matchesSearch && matchesCategory
+                        ? ""
+                        : "none";
+
+            });
+        }
+
+        function resetFilters() {
+
+            searchInput.value = "";
+            categoryFilter.value = "all";
+
+            filterTable();
+
+        }
+
+        searchInput.addEventListener("input", filterTable);
+        categoryFilter.addEventListener("change", filterTable);
+
+    </script>
+
+</body>
+
+</html>
